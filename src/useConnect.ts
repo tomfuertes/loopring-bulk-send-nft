@@ -1,6 +1,34 @@
 import * as sdk from "@loopring-web/loopring-sdk";
+import { connectProvides } from "@loopring-web/web3-provider";
+import LoopringAPI from "./loopring";
 
 import { ChainId, useConnectHook } from "./useConnectHook";
+
+const signatureKeyPairMock = async function (
+  exchangeAddress: string,
+  accInfo: sdk.AccountInfo,
+  _web3: any
+) {
+  const opts = {
+    web3: connectProvides.usedWeb3,
+    address: accInfo.owner,
+    keySeed:
+      accInfo.keySeed ||
+      sdk.GlobalAPI.KEY_MESSAGE.replace(
+        "${exchangeAddress}",
+        exchangeAddress
+      ).replace("${nonce}", (accInfo.nonce - 1).toString()),
+    walletType: sdk.ConnectorNames.MetaMask,
+    accountId: Number(accInfo.accountId),
+    chainId: sdk.ChainId.MAINNET,
+  };
+  console.log(accInfo, opts);
+  // debugger; // (sdk.generateKeyPair);
+  const eddsaKey = await sdk.generateKeyPair(opts);
+
+  console.log("eddsaKey", eddsaKey);
+  return eddsaKey;
+};
 
 export function useConnect() {
   useConnectHook({
@@ -18,36 +46,34 @@ export function useConnect() {
     handleConnect: async ({
       accounts,
       provider,
+      // web3,
       chainId,
     }: {
       accounts: string;
       provider: any;
+      // web3: any;
       chainId: ChainId | "unknown";
     }) => {
-      const accAddress = accounts[0];
-      // console.log(provider, accounts, accAddress, chainId);
+      const address = accounts[0];
 
-      // console.log(loopring);
+      // console.log(web3);
 
-      console.log(
-        "After connect >>,network part start: step1 networkUpdate",
-        accAddress
+      const { exchangeInfo } = await LoopringAPI.exchangeAPI.getExchangeInfo();
+
+      console.log("exchangeInfo", exchangeInfo);
+      const { accInfo } = await LoopringAPI.exchangeAPI.getAccount({
+        owner: address,
+      });
+
+      console.log("accInfo", accInfo);
+
+      const eddsaKey = await signatureKeyPairMock(
+        exchangeInfo.exchangeAddress,
+        accInfo,
+        provider
       );
+      console.log("eddsaKey:", eddsaKey.sk);
 
-      const opts = {
-        web3: provider,
-        address: accAddress,
-        keySeed: sdk.GlobalAPI.KEY_MESSAGE.replace(
-          "${exchangeAddress}",
-          "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4"
-        ).replace("${nonce}", (0).toString()),
-        walletType: sdk.ConnectorNames.MetaMask,
-        chainId: sdk.ChainId.MAINNET,
-      };
-      console.log(opts);
-      const eddsaKey = await sdk.generateKeyPair(opts);
-
-      console.log(eddsaKey);
       console.log("After connect >>,network part done: step2 check account");
     },
   });

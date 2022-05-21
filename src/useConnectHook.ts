@@ -4,18 +4,18 @@ import {
   walletServices,
   Commands,
   ErrorType,
-  ProcessingType
+  ProcessingType,
 } from "@loopring-web/web3-provider";
 export enum ChainId {
   MAINNET = 1,
-  GOERLI = 5
+  GOERLI = 5,
 }
 export function useConnectHook({
   // handleChainChanged,
   handleConnect,
   handleAccountDisconnect,
   handleError,
-  handleProcessing
+  handleProcessing,
 }: {
   handleProcessing?: (props: {
     type: keyof typeof ProcessingType;
@@ -53,12 +53,13 @@ export function useConnectHook({
           //     handleChainChanged ? handleChainChanged(data.chainId) : undefined;
           //     break
           case "ConnectWallet": // provider, accounts, chainId, networkId
+            console.log("data", data);
             const { accounts, provider, chainId } = data
               ? data
               : {
                   accounts: undefined,
                   provider: undefined,
-                  chainId: 1
+                  chainId: 1,
                 };
             if (handleConnect) {
               handleConnect({ accounts, provider, chainId });
