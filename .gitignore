@@ -1,0 +1,12 @@
+.env
+yarn-error.log
+*.tgz
+*testfile*
+.idea
+_book
+dist
+node_modules
+coverage
+./docs
+.DS_Store
+**/*.js
