@@ -10,3 +10,4 @@ coverage
 ./docs
 .DS_Store
 **/*.js
+accounts.txt
