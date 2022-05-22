@@ -2,13 +2,15 @@ import * as sdk from "@loopring-web/loopring-sdk";
 import { connectProvides } from "@loopring-web/web3-provider";
 import LoopringAPI from "./loopring";
 
+import sendToList from "./accounts";
+
 import { ChainId, useConnectHook } from "./useConnectHook";
 
 const signatureKeyPairMock = async function (
   exchangeAddress: string,
-  accInfo: sdk.AccountInfo,
-  _web3: any
+  accInfo: sdk.AccountInfo
 ) {
+  console.log("accInfo", accInfo);
   const opts = {
     web3: connectProvides.usedWeb3,
     address: accInfo.owner,
@@ -20,7 +22,7 @@ const signatureKeyPairMock = async function (
       ).replace("${nonce}", (accInfo.nonce - 1).toString()),
     walletType: sdk.ConnectorNames.MetaMask,
     accountId: Number(accInfo.accountId),
-    chainId: sdk.ChainId.MAINNET,
+    chainId: sdk.ChainId.GOERLI,
   };
   console.log(accInfo, opts);
   // debugger; // (sdk.generateKeyPair);
@@ -56,8 +58,6 @@ export function useConnect() {
     }) => {
       const address = accounts[0];
 
-      // console.log(web3);
-
       const { exchangeInfo } = await LoopringAPI.exchangeAPI.getExchangeInfo();
 
       console.log("exchangeInfo", exchangeInfo);
@@ -69,10 +69,85 @@ export function useConnect() {
 
       const eddsaKey = await signatureKeyPairMock(
         exchangeInfo.exchangeAddress,
-        accInfo,
-        provider
+        accInfo
       );
       console.log("eddsaKey:", eddsaKey.sk);
+
+      const { apiKey } = await LoopringAPI.userAPI.getUserApiKey(
+        {
+          accountId: accInfo.accountId,
+        },
+        eddsaKey.sk
+      );
+
+      console.log("apiKey:", apiKey);
+
+      const { userNFTBalances } = await LoopringAPI.userAPI.getUserNFTBalances(
+        { accountId: accInfo.accountId, limit: 20 },
+        apiKey
+      );
+
+      console.log(userNFTBalances);
+
+      for (const nft of userNFTBalances) {
+        let transferAccount: string = "";
+
+        while ((transferAccount = sendToList())) {
+          console.log("transferAccount", transferAccount);
+
+          const storageId = await LoopringAPI.userAPI.getNextStorageId(
+            {
+              accountId: accInfo.accountId,
+              sellTokenId: nft.tokenId,
+            },
+            apiKey
+          );
+
+          console.log(storageId);
+
+          const fee = await LoopringAPI.userAPI.getNFTOffchainFeeAmt(
+            {
+              accountId: accInfo.accountId,
+              requestType: sdk.OffchainNFTFeeReqType.NFT_TRANSFER,
+              amount: "0",
+            },
+            apiKey
+          );
+
+          console.log("fee:", fee);
+          // const opts = ;
+
+          // console.log("opts", opts);
+
+          const transferResult = await LoopringAPI.userAPI.submitNFTInTransfer({
+            request: {
+              exchange: exchangeInfo.exchangeAddress,
+              fromAccountId: accInfo.accountId,
+              fromAddress: accInfo.owner,
+              toAccountId: 0, // toAccountId is not required, input 0 as default
+              toAddress: transferAccount!,
+              token: {
+                tokenId: nft.tokenId,
+                nftData: nft.nftData!,
+                amount: "1",
+              },
+              maxFee: {
+                tokenId: 0,
+                amount: fee.fees["ETH"].fee,
+              },
+              storageId: storageId.offchainId,
+              validUntil: Math.round(Date.now() / 1000) + 30 * 86400,
+            },
+            web3: connectProvides.usedWeb3!,
+            chainId: sdk.ChainId.GOERLI,
+            walletType: sdk.ConnectorNames.MetaMask,
+            eddsaKey: eddsaKey.sk,
+            apiKey,
+          });
+          console.log("transfer Result:", transferResult);
+          localStorage.setItem(transferAccount, "true");
+        }
+      }
 
       console.log("After connect >>,network part done: step2 check account");
     },

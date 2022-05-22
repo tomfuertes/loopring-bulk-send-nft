@@ -9,14 +9,14 @@ export default function App() {
     walletServices.sendDisconnect("", "should new provider");
     await connectProvides.MetaMask({});
   };
-  const walletConnect = async () => {
-    walletServices.sendDisconnect("", "should new provider");
-    await connectProvides.WalletConnect({ account: undefined, darkMode: true });
-  };
-  const coinbase = async () => {
-    walletServices.sendDisconnect("", "should new provider");
-    await connectProvides.Coinbase({});
-  };
+  // const walletConnect = async () => {
+  //   walletServices.sendDisconnect("", "should new provider");
+  //   await connectProvides.WalletConnect({ account: undefined, darkMode: true });
+  // };
+  // const coinbase = async () => {
+  //   walletServices.sendDisconnect("", "should new provider");
+  //   await connectProvides.Coinbase({});
+  // };
   const disconnect = () => {
     walletServices.sendDisconnect("", "disconnect");
   };
@@ -31,7 +31,7 @@ export default function App() {
             height="36"
           />
         </button>
-        <button onClick={walletConnect}>
+        {/* <button onClick={walletConnect}>
           <img
             src="https://static.loopring.io/assets/svg/wallet-connect.svg"
             alt="walletConnect"
@@ -44,7 +44,7 @@ export default function App() {
             alt="MetaMask"
             height="36"
           />
-        </button>
+        </button> */}
         <button onClick={disconnect}>disconnect</button>
       </div>
     </div>

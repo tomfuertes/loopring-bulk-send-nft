@@ -11,6 +11,7 @@ export default class LoopringAPIClass {
   public static nftAPI: sdk.NFTAPI;
   public static delegate: sdk.DelegateAPI;
   public static globalAPI: sdk.GlobalAPI;
+  public static whitelistedUserAPI: sdk.WhitelistedUserAPI;
   // public static contractAPI: sdk.ContractAPI;
   public static __chainId__: sdk.ChainId;
   public static InitApi = (chainId: sdk.ChainId) => {
@@ -22,6 +23,9 @@ export default class LoopringAPIClass {
     LoopringAPIClass.wsAPI = new sdk.WsAPI({ chainId });
     LoopringAPIClass.nftAPI = new sdk.NFTAPI({ chainId });
     LoopringAPIClass.delegate = new sdk.DelegateAPI({ chainId });
+    LoopringAPIClass.whitelistedUserAPI = new sdk.WhitelistedUserAPI({
+      chainId,
+    });
     LoopringAPIClass.__chainId__ = chainId;
     // LoopringAPI.contractAPI = ContractAPI;
   };
@@ -32,4 +36,4 @@ export default class LoopringAPIClass {
  * eth:  sdk.ChainId.MAINNET
  */
 
-LoopringAPIClass.InitApi(sdk.ChainId.MAINNET);
+LoopringAPIClass.InitApi(sdk.ChainId.GOERLI);

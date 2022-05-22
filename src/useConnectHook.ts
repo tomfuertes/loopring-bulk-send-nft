@@ -29,7 +29,7 @@ export function useConnectHook({
   handleConnect?: (prosp: {
     accounts: string;
     provider: provider;
-    chainId: ChainId | "unknown";
+    chainId: ChainId | 5;
   }) => void;
   handleAccountDisconnect?: () => void;
 }) {
@@ -59,9 +59,10 @@ export function useConnectHook({
               : {
                   accounts: undefined,
                   provider: undefined,
-                  chainId: 1,
+                  chainId: 5,
                 };
             if (handleConnect) {
+              console.log("chainid", chainId);
               handleConnect({ accounts, provider, chainId });
             }
             break;
