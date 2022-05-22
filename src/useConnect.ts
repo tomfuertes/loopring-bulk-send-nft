@@ -2,7 +2,7 @@ import * as sdk from "@loopring-web/loopring-sdk";
 import { connectProvides } from "@loopring-web/web3-provider";
 import LoopringAPI from "./loopring";
 
-import sendToList from "./accounts";
+import sendTo from "./accounts";
 
 import { ChainId, useConnectHook } from "./useConnectHook";
 
@@ -22,7 +22,7 @@ const signatureKeyPairMock = async function (
       ).replace("${nonce}", (accInfo.nonce - 1).toString()),
     walletType: sdk.ConnectorNames.MetaMask,
     accountId: Number(accInfo.accountId),
-    chainId: sdk.ChainId.GOERLI,
+    chainId: sdk.ChainId.MAINNET,
   };
   console.log(accInfo, opts);
   // debugger; // (sdk.generateKeyPair);
@@ -89,11 +89,24 @@ export function useConnect() {
 
       console.log(userNFTBalances);
 
+      let transferAccount: string = "";
       for (const nft of userNFTBalances) {
-        let transferAccount: string = "";
+        console.log("nft", nft);
+        console.log("sendTo", sendTo);
 
-        while ((transferAccount = sendToList())) {
+        while ((transferAccount = sendTo.shift()!)) {
           console.log("transferAccount", transferAccount);
+
+          if (transferAccount.endsWith(".eth")) {
+            const res = await LoopringAPI.walletAPI.getAddressByENS({
+              fullName: transferAccount,
+            });
+            if (res.address) {
+              transferAccount = res.address.toString();
+            } else {
+              console.error("ens not found: transferAccount", transferAccount);
+            }
+          }
 
           const storageId = await LoopringAPI.userAPI.getNextStorageId(
             {
@@ -139,7 +152,7 @@ export function useConnect() {
               validUntil: Math.round(Date.now() / 1000) + 30 * 86400,
             },
             web3: connectProvides.usedWeb3!,
-            chainId: sdk.ChainId.GOERLI,
+            chainId: sdk.ChainId.MAINNET,
             walletType: sdk.ConnectorNames.MetaMask,
             eddsaKey: eddsaKey.sk,
             apiKey,

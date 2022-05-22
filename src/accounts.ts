@@ -3,10 +3,4 @@ const accounts: Array<string> = [
   // "nftspike.loopring.eth",
 ];
 
-export default () => {
-  let account: string = accounts.shift()!;
-  while (!!account && !!localStorage.getItem(account)) {
-    account = accounts.shift()!;
-  }
-  return account;
-};
+export default accounts;

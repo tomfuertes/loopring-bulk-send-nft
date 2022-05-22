@@ -8,7 +8,7 @@ import {
 } from "@loopring-web/web3-provider";
 export enum ChainId {
   MAINNET = 1,
-  GOERLI = 5,
+  // GOERLI = 5,
 }
 export function useConnectHook({
   // handleChainChanged,
