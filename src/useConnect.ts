@@ -158,7 +158,7 @@ export function useConnect() {
             apiKey,
           });
           console.log("transfer Result:", transferResult);
-          localStorage.setItem(transferAccount, "true");
+          // localStorage.setItem(transferAccount, "true");
         }
       }
 
