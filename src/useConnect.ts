@@ -22,7 +22,7 @@ const signatureKeyPairMock = async function (
       ).replace("${nonce}", (accInfo.nonce - 1).toString()),
     walletType: sdk.ConnectorNames.MetaMask,
     accountId: Number(accInfo.accountId),
-    chainId: sdk.ChainId.MAINNET,
+    chainId: sdk.ChainId.GOERLI,
   };
   console.log(accInfo, opts);
   // debugger; // (sdk.generateKeyPair);
@@ -152,7 +152,7 @@ export function useConnect() {
               validUntil: Math.round(Date.now() / 1000) + 30 * 86400,
             },
             web3: connectProvides.usedWeb3!,
-            chainId: sdk.ChainId.MAINNET,
+            chainId: sdk.ChainId.GOERLI,
             walletType: sdk.ConnectorNames.MetaMask,
             eddsaKey: eddsaKey.sk,
             apiKey,

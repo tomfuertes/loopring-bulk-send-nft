@@ -36,4 +36,4 @@ export default class LoopringAPIClass {
  * eth:  sdk.ChainId.MAINNET
  */
 
-LoopringAPIClass.InitApi(sdk.ChainId.MAINNET);
+LoopringAPIClass.InitApi(sdk.ChainId.GOERLI);

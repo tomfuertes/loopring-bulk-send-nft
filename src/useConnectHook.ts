@@ -7,8 +7,8 @@ import {
   ProcessingType,
 } from "@loopring-web/web3-provider";
 export enum ChainId {
-  MAINNET = 1,
-  // GOERLI = 5,
+  // MAINNET = 1,
+  GOERLI = 5,
 }
 export function useConnectHook({
   // handleChainChanged,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, useState } from "react";
 import "./styles.css";
 import { useConnect } from "./useConnect";
 import { walletServices, connectProvides } from "@loopring-web/web3-provider";
@@ -20,10 +20,36 @@ export default function App() {
   const disconnect = () => {
     walletServices.sendDisconnect("", "disconnect");
   };
+
+  const [accounts, accountsProvider] = React.useState<string[]>([]);
+
+  const queueAccounts = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    // debugger;
+    accountsProvider(
+      event.target.value
+        .split("\n")
+        .map((account) => account && account.trim())
+        .filter(Boolean)
+        .map((account) => account.replace(/[,\s]/g, ""))
+    );
+  };
+  const AccountList = () => {
+    return (
+      <ul>
+        {accounts.map((account) => (
+          <li>{account}</li>
+        ))}
+      </ul>
+    );
+  };
+
   return (
     <div className="App">
       <h1>Hello React</h1>
+
       <div style={{ display: "flex", flexDirection: "column" }}>
+        <textarea onChange={queueAccounts}></textarea>
+
         <button onClick={metaMask}>
           <img
             src="https://static.loopring.io/assets/svg/meta-mask.svg"
@@ -46,6 +72,8 @@ export default function App() {
           />
         </button> */}
         <button onClick={disconnect}>disconnect</button>
+
+        <AccountList />
       </div>
     </div>
   );
