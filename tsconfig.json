@@ -5,7 +5,7 @@
     "esModuleInterop": true,
     "lib": ["dom", "es2015"],
     "jsx": "preserve",
-    "target": "es5",
+    "target": "es6",
     "allowJs": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
@@ -14,6 +14,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "downlevelIteration": true
   }
 }

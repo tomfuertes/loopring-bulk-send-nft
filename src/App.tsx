@@ -3,8 +3,15 @@ import "./styles.css";
 import { useConnect } from "./useConnect";
 import { walletServices, connectProvides } from "@loopring-web/web3-provider";
 
+const accounts: Array<string> = [];
+
 export default function App() {
-  useConnect();
+  useConnect(accounts);
+  console.log("rendered", new Date());
+  const [sendTo, sendToProvider] = React.useState<string[]>(accounts);
+
+  // const history = [];
+
   const metaMask = async () => {
     walletServices.sendDisconnect("", "should new provider");
     await connectProvides.MetaMask({});
@@ -21,23 +28,26 @@ export default function App() {
     walletServices.sendDisconnect("", "disconnect");
   };
 
-  const [accounts, accountsProvider] = React.useState<string[]>([]);
-
   const queueAccounts = (event: ChangeEvent<HTMLTextAreaElement>) => {
     // debugger;
-    accountsProvider(
-      event.target.value
-        .split("\n")
-        .map((account) => account && account.trim())
-        .filter(Boolean)
-        .map((account) => account.replace(/[,\s]/g, ""))
-    );
+    const list = [
+      ...new Set<string>(
+        event.target.value
+          .split("\n")
+          .map((account) => account && account.trim())
+          .filter(Boolean)
+          .map((account) => account.replace(/[,\s]/g, ""))
+      ),
+    ];
+    accounts.length = 0;
+    accounts.push(...list);
+    sendToProvider(list);
   };
   const AccountList = () => {
     return (
       <ul>
-        {accounts.map((account) => (
-          <li>{account}</li>
+        {sendTo.map((account) => (
+          <li key={account}>{account}</li>
         ))}
       </ul>
     );
@@ -73,7 +83,7 @@ export default function App() {
         </button> */}
         <button onClick={disconnect}>disconnect</button>
 
-        <AccountList />
+        {AccountList()}
       </div>
     </div>
   );

@@ -2,8 +2,6 @@ import * as sdk from "@loopring-web/loopring-sdk";
 import { connectProvides } from "@loopring-web/web3-provider";
 import LoopringAPI from "./loopring";
 
-import sendTo from "./accounts";
-
 import { ChainId, useConnectHook } from "./useConnectHook";
 
 const signatureKeyPairMock = async function (
@@ -32,7 +30,7 @@ const signatureKeyPairMock = async function (
   return eddsaKey;
 };
 
-export function useConnect() {
+export function useConnect(sendTo: Array<string>) {
   useConnectHook({
     handleAccountDisconnect: () => {
       console.log("handleAccountDisconnect:");
